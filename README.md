@@ -42,6 +42,51 @@ For details on installing OpenNMS, see [Install OpenNMS][].
 
 TL;DR - If you just want to set up a simple non-production evaluation of OpenNMS Horizon on Linux, some basic install scripts are available at [opennms-forge/opennms-install](https://github.com/opennms-forge/opennms-install)
 
+* **install OpenNMS Horizon on Ubuntu**
+
+curl -fsSL https://debian.opennms.org/OPENNMS-GPG-KEY | sudo gpg --dearmor -o /usr/share/keyrings/opennms.gpg
+
+echo "deb [signed-by=/usr/share/keyrings/opennms.gpg] https://debian.opennms.org stable main" | sudo tee /etc/apt/sources.list.d/opennms.list
+
+sudo apt update
+
+sudo apt -y install opennms
+
+sudo apt -y install r-recommended
+
+sudo apt -y install tree
+
+tree /usr/share/opennms -L 1
+
+// postgres docker
+
+docker pull postgres:latest
+
+docker run --name opennms-postgres --env POSTGRES_PASSWORD=admin --volume opennms-volume:/var/lib/postgresql/data --publish 35432:5432 --detach postgres
+
+sudo -u opennms ${OPENNMS_HOME}/bin/scvcli set postgres opennms opennms
+
+sudo -u opennms ${OPENNMS_HOME}/bin/scvcli set postgres-admin postgres admin
+
+sudo -u opennms vi /usr/share/opennms/etc/opennms-datasources.xml
+
+sudo /usr/share/opennms/bin/install -dis
+
+sudo systemctl daemon-reload
+
+sudo systemctl restart opennms
+
+sudo systemctl status opennms
+
+sudo systemctl enable --now opennms
+
+open http://{host_ip}:8980/opennms/login.jsp with a browser
+
+log in with default credentials
+**Username:** `admin`
+**Password:** `admin`
+  
+
 Build OpenNMS
 ================
 
